@@ -11,6 +11,9 @@
     <title>API CATEGORY</title>
 </head>
 <body>
-<a href="/api/category/getAllCategorys">Get All Category</a>
+<div style="display: flex;align-items: center;justify-content: space-around;">
+    <a href="/api/category/getAllCategorys">Get All Category</a>
+    <a href="/api/category/getCategoryById?id=">Get Category By ID</a>
+</div>
 </body>
 </html>

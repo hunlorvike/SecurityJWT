@@ -11,7 +11,10 @@
     <title>API POST</title>
 </head>
 <body>
-<a href="/api/post/getAllPosts">Get All Post</a>
-<a href="/api/post/getPostsByCategory">Get Posts By Category</a>
+<div style="display: flex;align-items: center;justify-content: space-around;">
+    <a href="/api/post/getAllPosts">Get All Post</a>
+    <a href="/api/post/getPostById?id=">Get Posts By ID</a>
+    <a href="/api/post/getPostsByCategory?category=">Get Posts By Category</a>
+</div>
 </body>
 </html>

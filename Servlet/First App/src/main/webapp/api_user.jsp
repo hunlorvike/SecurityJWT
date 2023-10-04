@@ -11,7 +11,10 @@
     <title>API USER</title>
 </head>
 <body>
-<a href="/api/user/getAllUsers">Get All Users</a>
-<a href="/api/user/getUsersByRole">Get Users By Role</a>
+<div style="display: flex;align-items: center;justify-content: space-around;">
+    <a href="/api/user/getAllUsers">Get All Users</a>
+    <a href="/api/user/getUsersById?id=">Get Users By Id</a>
+    <a href="/api/user/getUsersByRole?role=">Get Users By Role</a>
+</div>
 </body>
 </html>
