@@ -44,7 +44,11 @@ public class CategoryServlet extends HttpServlet {
         }
     }
 
-    private void getAllCategories(HttpServletResponse resp) throws IOException {
+    private void getAllCategories(HttpServletResponse resp) throws IOException {        // Thiết lập tiêu đề cho CORS
+        resp.setHeader("Access-Control-Allow-Origin", "*"); // Cho phép tất cả các nguồn gốc truy cập
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Cho phép các phương thức yêu cầu
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); // Cho phép các tiêu đề yêu cầu
+
         try {
             JsonArray allCategories = categoryRepository.getAllCategories();
             resp.setContentType("application/json");
@@ -57,6 +61,10 @@ public class CategoryServlet extends HttpServlet {
     }
 
     private void getCategoryById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // Thiết lập tiêu đề cho CORS
+        resp.setHeader("Access-Control-Allow-Origin", "*"); // Cho phép tất cả các nguồn gốc truy cập
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Cho phép các phương thức yêu cầu
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); // Cho phép các tiêu đề yêu cầu
         String idFilter = req.getParameter("id");
         resp.setContentType("application/json");
 
