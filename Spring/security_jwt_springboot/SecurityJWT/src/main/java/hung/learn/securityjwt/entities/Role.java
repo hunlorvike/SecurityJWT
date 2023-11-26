@@ -21,5 +21,20 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
-
+    public String getPrefixedName() {
+        // Check if the role name starts with "ROLE_", and add the prefix if it doesn't
+        if (!name.startsWith("ROLE_")) {
+            return "ROLE_" + name;
+        }
+        return name;
+    }
 }
+
+/*
+* ADMIN
+* USER
+* ADMIN_READ
+* ADMIN_POST
+* ADMIN_UPDATE
+* ADMIN_DELETE
+*/

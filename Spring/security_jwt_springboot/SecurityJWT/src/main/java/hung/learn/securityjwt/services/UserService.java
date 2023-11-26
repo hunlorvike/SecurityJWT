@@ -9,6 +9,7 @@ import hung.learn.securityjwt.repositories.RoleRepository;
 import hung.learn.securityjwt.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -22,7 +23,6 @@ public class UserService {
 
     @Autowired
     private RoleRepository roleRepository;
-
 
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(

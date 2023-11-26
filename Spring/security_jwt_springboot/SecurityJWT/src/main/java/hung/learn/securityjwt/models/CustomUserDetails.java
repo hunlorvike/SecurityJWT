@@ -9,19 +9,31 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import hung.learn.securityjwt.entities.Role;
+
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class CustomUserDetails implements UserDetails {
-    User user;
+    private User user;
+    private List<GrantedAuthority> authorities;
+
+    public CustomUserDetails(User user) {
+        this.user = user;
+        this.authorities = user.getRoles().stream()
+                .map(Role::getPrefixedName)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
     }
 
     @Override

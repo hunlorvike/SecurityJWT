@@ -13,3 +13,13 @@ public class SecurityJwtApplication {
     }
 
 }
+
+/*
+ * Spring Security sử dụng GrantedAuthority để biểu diễn quyền (role).
+ * Khi bạn tạo một Authentication object (ví dụ: UsernamePasswordAuthenticationToken),
+ * bạn cung cấp một danh sách các GrantedAuthority mà người dùng có.
+
+ * Khi sử dụng hasAnyRole hoặc hasAnyAuthority trong @PreAuthorize,
+ * Spring Security sẽ tự động so sánh danh sách các quyền (role) mà người dùng có (được lưu trữ trong GrantedAuthority)
+ * với danh sách các quyền bạn cung cấp trong hasAnyRole hoặc hasAnyAuthority.
+ * */

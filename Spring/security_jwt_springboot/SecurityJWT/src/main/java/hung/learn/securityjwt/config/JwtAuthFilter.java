@@ -36,30 +36,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        String token = request.getHeader("Authorization");
 
-            final String authorization = request.getHeader("Authorization");
-            if (authorization != null && authorization.startsWith("Bearer ")) {
+        if (token != null) {
+            String username = jwtService.getUsernameFromToken(token);
 
-                final String token = authorization.substring(7);
-                final String username = jwtService.getUsernameFromToken(token);
-
-                Optional<User> user = userRepository.findByEmail(username);
-
-                if (username != null && jwtService.isTokenValid(token)) {
-
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                    final UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities());
-
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
+            if (username != null && jwtService.isTokenValid(token)) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                final UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                // Handle invalid token (send 401 Unauthorized, for example)
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid or expired token");
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

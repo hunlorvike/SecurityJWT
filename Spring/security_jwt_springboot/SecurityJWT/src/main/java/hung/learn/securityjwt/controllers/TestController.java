@@ -62,8 +62,8 @@ public class TestController {
         return user;
     }
 
-    @PostMapping("/token/claims")
-    public ResponseEntity<Claims> claims(@RequestBody String token) {
+    @GetMapping("/token/claims")
+    public ResponseEntity<Claims> claims(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(jwtService.getClaims(token));
     }
 
@@ -71,6 +71,24 @@ public class TestController {
     public ResponseEntity<String> getUsernameFromToken(@RequestHeader("Authorization") String token) {
         String username = jwtService.getUsernameFromToken(token);
         return ResponseEntity.ok(username);
+    }
+
+    @GetMapping("/check-admin")
+    public ResponseEntity<String> checkAdmin(@RequestHeader("Authorization") String token) {
+        if (jwtService.isAdmin(token)) {
+            return ResponseEntity.ok("User is an admin");
+        } else {
+            return ResponseEntity.ok("User is not an admin");
+        }
+    }
+
+    @GetMapping("/get-user")
+    public ResponseEntity<CustomUserDetails> getUserDetailsFromToken(@RequestHeader("Authorization") String token) {
+        // Giải mã token để lấy thông tin user
+        CustomUserDetails userDetails = jwtService.getUserDetailsFromToken(token);
+
+        // Trả về thông tin user trong ResponseEntity
+        return ResponseEntity.ok(userDetails);
     }
 
 }

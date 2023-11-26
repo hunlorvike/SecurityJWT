@@ -1,11 +1,16 @@
 package hung.learn.securityjwt.config;
 
+import hung.learn.securityjwt.dtos.CustomAccessDeniedHandler;
 import hung.learn.securityjwt.services.impl.UserDetailsServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +23,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,20 +55,35 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers(PUBLIC_URLS).permitAll()
-                                .requestMatchers(PRIVATE_URLS).hasAnyRole("ADMIN")
-                                .anyRequest()
-                                .authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+        httpSecurity
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(requests ->
+                        requests
+                                .requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers(PRIVATE_URLS).hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, PRIVATE_URLS).hasAnyRole("ADMIN_READ")
+                                .requestMatchers(HttpMethod.POST, PRIVATE_URLS).hasAnyRole("ADMIN_POST")
+                                .requestMatchers(HttpMethod.PUT, PRIVATE_URLS).hasAnyRole("ADMIN_UPDATE")
+                                .requestMatchers(HttpMethod.DELETE, PRIVATE_URLS).hasAnyRole("ADMIN_DELETE")
+                                .anyRequest().authenticated()
+                )
+                .exceptionHandling(config -> config.accessDeniedHandler(customAccessDeniedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
-                .logout(Customizer.withDefaults())
-                .build();
+                .formLogin(Customizer.withDefaults())
+                .logout(Customizer.withDefaults());
+
+        return httpSecurity.build();
     }
 
     @Bean
